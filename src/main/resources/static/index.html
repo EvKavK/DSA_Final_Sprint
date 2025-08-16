@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Binary Search Tree App</title>
+</head>
+<body>
+    <h1>Binary Search Tree App</h1>
+
+    <div>
+        <h2>Enter Numbers</h2>
+        <input type="text" id="numbersInput" placeholder="e.g., 5,3,7">
+        <button onclick="submitNumbers()">Submit</button>
+    </div>
+
+    <div>
+        <h2>Previous Trees</h2>
+        <button onclick="showPrevious()">Show Previous</button>
+        <ul id="previousTrees"></ul>
+    </div>
+
+    <div>
+        <h2>Latest BST Result</h2>
+        <pre id="latestResult"></pre>
+    </div>
+
+    <script>
+        function submitNumbers() {
+            const input = document.getElementById('numbersInput').value;
+            fetch('/api/process-numbers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ numbers: input })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('latestResult').textContent =
+                    `Input Numbers: ${data.inputNumbers}\n` +
+                    `In-Order Traversal: ${data.inOrderTraversal}\n` +
+                    `Pre-Order Traversal: ${data.preOrderTraversal}\n` +
+                    `Post-Order Traversal: ${data.postOrderTraversal}`;
+            })
+            .catch(err => console.error(err));
+        }
+
+        function showPrevious() {
+            fetch('/api/previous-trees')
+            .then(response => response.json())
+            .then(data => {
+                const list = document.getElementById('previousTrees');
+                list.innerHTML = '';
+                data.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent =
+                        `Input: ${item.inputNumbers}, ` +
+                        `In-Order: ${item.inOrderTraversal}, ` +
+                        `Pre-Order: ${item.preOrderTraversal}, ` +
+                        `Post-Order: ${item.postOrderTraversal}`;
+                    list.appendChild(li);
+                });
+            })
+            .catch(err => console.error(err));
+        }
+    </script>
+</body>
+</html>
